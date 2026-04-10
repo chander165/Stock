@@ -1,0 +1,30 @@
+name: Market Check Agent
+
+on:
+  schedule:
+    # Runs every 15 mins, Mon-Fri, 14:30 to 21:00 UTC (8:30 AM - 3:00 PM CST)
+    - cron: '*/15 14-20 * * 1-5'
+    - cron: '0 21 * * 1-5'
+  workflow_dispatch: # This adds a "Run Now" button for testing
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: |
+          pip install yfinance requests pandas
+
+      - name: Run Stock Agent
+        env:
+          DISCORD_WEBHOOK_URL: ${{ secrets.DISCORD_WEBHOOK_URL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python yahoo_test.py
